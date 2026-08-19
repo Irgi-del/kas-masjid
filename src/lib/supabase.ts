@@ -1,22 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const DEFAULT_SUPABASE_URL = 'https://vviakvrwcnffcyrsokiz.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_GaQUtG-5q6pBDhWng53hlQ_Q7YsXCCG';
 
-const isValidUrl = (url: string) => {
-  try {
-    if (!url || url.includes('your-supabase-project-id') || !url.startsWith('http')) return false;
-    new URL(url);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
+const envUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = (envUrl && !envUrl.includes('your-supabase-project-id') && envUrl.startsWith('http')) 
+  ? envUrl 
+  : DEFAULT_SUPABASE_URL;
 
-const isConfigured = isValidUrl(supabaseUrl) && Boolean(supabaseAnonKey);
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
-export const supabase = isConfigured 
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const isSupabaseConnected = () => Boolean(supabase);
